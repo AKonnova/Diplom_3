@@ -4,17 +4,16 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Allure;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class DriverFactory {
 
     private static final int MAX_RETRIES = 2;
 
-    public static WebDriver getDriver(String browserName) {
-        if (browserName == null) {
-            browserName = "chrome";
-        }
-
+    public static WebDriver getDriver() {
+        String browserName = System.getProperty("browser", "chrome");
         return createDriverWithRetry(browserName);
     }
 
@@ -56,13 +55,20 @@ public class DriverFactory {
 
     private static WebDriver createChromeDriver() {
         WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--window-size=1920,1080");
         Allure.step("Starting ChromeDriver");
-        return new ChromeDriver();
+        return new ChromeDriver(options);
     }
 
     private static WebDriver createFirefoxDriver() {
         WebDriverManager.firefoxdriver().setup();
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("--width=1920");
+        options.addArguments("--height=1080");
         Allure.step("Starting FirefoxDriver");
-        return new FirefoxDriver();
+        return new FirefoxDriver(options);
     }
 }
